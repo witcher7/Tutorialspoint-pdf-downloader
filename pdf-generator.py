@@ -1,19 +1,27 @@
-import urllib, sys
+import urllib.request
+import os
 
 def report(blocknr, blocksize, size):
-    current = blocknr*blocksize
-    sys.stdout.write("\r{0:.2f}%".format(100.0*current/size))
+    current = blocknr * blocksize
+    percent = 100.0 * current / size
+    sys.stdout.write("\rDownloading... {0:.2f}%".format(percent))
+    sys.stdout.flush()
 
 def downloadFile(url):
-    fname = url.split('/')[-1]
-    urllib.urlretrieve(url, fname, report)
-    print "Download starting..."
-    
-tld = "http://www.tutorialspoint.com/"
-#enter any tutorials url name from the website
-#in the future we could scrape and show a menu
-print "Name of Tutorial? "
-query = raw_input()
-url =  tld+query+'/'+query+'_tutorial.pdf'
-downloadFile(url)
-print "\nComplete PDF for " + query + " has been downloaded\n"
+    try:
+        fname = url.split('/')[-1]
+        urllib.request.urlretrieve(url, fname, reporthook=report)
+        print("\nDownload complete!")
+    except Exception as e:
+        print("\nDownload failed: ", e)
+
+if __name__ == "__main__":
+    tld = "http://www.tutorialspoint.com/"
+    print("Name of Tutorial? ")
+    query = input().strip()  # Use input() for Python 3.x, strip() to remove any extra whitespace
+
+    url = tld + query + '/' + query + '_tutorial.pdf'
+    print("Downloading PDF for " + query + "...")
+    downloadFile(url)
+
+    print("\nComplete PDF for " + query + " has been downloaded.")
